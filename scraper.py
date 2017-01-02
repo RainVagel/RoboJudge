@@ -1,5 +1,11 @@
+# -​*- coding: utf-8 -*​-
+
 import requests
+import logging
+import urllib2
 from bs4 import BeautifulSoup
+
+logging.basicConfig(format='%(asctime)s %(levelname)s:  %(message)s', level=logging.DEBUG)
 
 # Selle on riigiteataja kodulehekülg. Siia lõppu lisan aktide lingid.
 riigiteataja_link = "https://www.riigiteataja.ee/"
@@ -11,11 +17,21 @@ soup = BeautifulSoup(requests.get('https://www.riigiteataja.ee/tervikteksti_tule
                                   '&valjDoli2=Riigikogu+-+seadus&valjDoli3=Ülemnõukogu+-+seadus'
                                   '&sakk=kehtivad_kehtetuteta&leht=0'
                                   '&kuvaKoik=true&sorteeri=&kasvav=true').text, "lxml")
-# print(soup.prettify())
+#print(soup.prettify())
 aktide_lingid = list()
 for link in soup.find_all('a'):
     if "akt/" in link.get('href'):
         aktide_lingid.append(link.get('href'))
-    # print(link.get('href'))
-# print(lingid)
 
+#print(aktide_lingid)
+
+protsessitud_lehti = 0
+lehed = list()
+
+logging.info("Laen seaduseid ... %s dokumenti kokku", len(aktide_lingid))
+
+for link in aktide_lingid:
+    lehed.append(urllib2.urlopen("https://www.riigiteataja.ee/" + str(link)).read())
+    logging.debug("Protsessin järgmist seadust: %s", link)
+    protsessitud_lehti += 1
+    logging.debug("Protsessitud lehti kokku: %s", protsessitud_lehti)
