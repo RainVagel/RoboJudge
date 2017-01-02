@@ -26,12 +26,14 @@ for link in soup.find_all('a'):
 #print(aktide_lingid)
 
 protsessitud_lehti = 0
-lehed = list()
+sisu = list()
 
 logging.info("Laen seaduseid ... %s dokumenti kokku", len(aktide_lingid))
 
-for link in aktide_lingid:
-    lehed.append(urllib2.urlopen("https://www.riigiteataja.ee/" + str(link)).read())
+for link in aktide_lingid[:2]:
+    sisu.append(urllib2.urlopen("https://www.riigiteataja.ee/" + str(link) + ".xml").read())
     logging.debug("Protsessin järgmist seadust: %s", link)
     protsessitud_lehti += 1
     logging.debug("Protsessitud lehti kokku: %s", protsessitud_lehti)
+
+print(sisu)
