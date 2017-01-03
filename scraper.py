@@ -5,6 +5,7 @@ import logging
 import re
 from xml.etree.ElementTree import XML
 from bs4 import BeautifulSoup
+from pandas import DataFrame
 
 # Selle on riigiteataja kodulehekülg. Siia lõppu lisan aktide lingid.
 riigiteataja_link = "https://www.riigiteataja.ee/"
@@ -104,14 +105,8 @@ class Scraper:
                             for great_grand_child in grand_child:
                                 if great_grand_child.tag == "tavatekst":
                                     # print(great_grand_child.text)
-                                    self.sisu_tekst += self.alampunkt_nr + " " + great_grand_child.text
-                    # for grand_child in child:
-                    #     if grand_child.tag == "alampunktNr":
-                    #         self.alampunkt_nr = grand_child.text
-                    #     if grand_child.tag == "sisuTekst":
-                    #         for great_grand_child in grand_child:
-                    #             if great_grand_child.tag == "tavatekst":
-                    #                 self.sisu_tekst += self.alampunkt_nr + " " + great_grand_child.text
+                                    self.sisu_tekst += "" if self.alampunkt_nr is None else \
+                                        self.alampunkt_nr + " " + great_grand_child.text
             self.kehtivuse_algus_column.append(self.kehtivuse_algus)
             self.kehtivuse_lopp_column.append(self.kehtivuse_lopp)
             self.akti_nimi_column.append(self.akti_nimi)
@@ -132,17 +127,21 @@ class Scraper:
             tree = XML(xml_string)
             for elem in tree:
                 self.xml_parser(elem)
-        print("kehtivuse algus: " + str(self.kehtivuse_algus_column))
-        print("kehtivuse lõpp: " + str(self.kehtivuse_lopp_column))
-        print("aktiNimi: " + str(self.akti_nimi_column))
-        print("peatukkNr: " + str(self.peatukk_nr_column))
-        print("paragrahbNr: " + str(self.paragrahv_nr_column))
-        print("paragrahvNimi: " + str(self.paragrahv_pealkiri_column))
-        print("lõigeNr: " + str(self.loige_nr_column))
-        print("ylaindeksNr: " + str(self.ylaindeks_column))
-        print("sisuTekst: " + str(self.sisu_tekst_column))
-        # TODO
-        return None
+        # print("kehtivuse algus: " + str(self.kehtivuse_algus_column))
+        # print("kehtivuse lõpp: " + str(self.kehtivuse_lopp_column))
+        # print("aktiNimi: " + str(self.akti_nimi_column))
+        # print("peatukkNr: " + str(self.peatukk_nr_column))
+        # print("paragrahbNr: " + str(self.paragrahv_nr_column))
+        # print("paragrahvNimi: " + str(self.paragrahv_pealkiri_column))
+        # print("lõigeNr: " + str(self.loige_nr_column))
+        # print("ylaindeksNr: " + str(self.ylaindeks_column))
+        # print("sisuTekst: " + str(self.sisu_tekst_column))
+        df = DataFrame({"kehtivuse_algus" : self.kehtivuse_algus_column, "kehtivuse_lopp" : self.kehtivuse_lopp_column,
+                        "akti_nimi" : self.akti_nimi_column, "peatukk_nr" : self.peatukk_nr_column,
+                        "paragrahv_nr" : self.paragrahv_nr_column, "paragrahv_nimi" : self.paragrahv_pealkiri_column,
+                        "loige_nr" : self.loige_nr_column, "ylaindeks_nr" : self.ylaindeks_column,
+                        "sisu_tekst" : self.sisu_tekst_column})
+        df.to_excel("data.xlsx", sheet_name="data", index=True)
 
 
 def get_laws():
@@ -178,12 +177,12 @@ def get_laws():
 
     return xml_files
 
-scraper = Scraper()
-scraper.insert_laws_to_excel(get_laws())
-# Scraper.insert_laws_to_excel(Scraper(), get_laws())
+# Et välja kutsuda ilma scrape meetodita
+# scraper = Scraper()
+# scraper.insert_laws_to_excel(get_laws())
 
-    # def scrape():
-    #     # Mooduli põhimeetod, mida väljaspool moodulit kutsutakse välja
-    #     insert_laws_to_excel(get_laws())
-    #     # TODO
-    #     return None
+
+def scrape():
+    # Mooduli põhimeetod, mida väljaspool moodulit kutsutakse välja
+    scraper = Scraper()
+    scraper.insert_laws_to_excel(get_laws())
