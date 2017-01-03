@@ -6,35 +6,13 @@ import re
 from xml.etree.ElementTree import XML
 from bs4 import BeautifulSoup
 
+# Selle on riigiteataja kodulehekülg. Siia lõppu lisan aktide lingid.
 riigiteataja_link = "https://www.riigiteataja.ee/"
 
 
 class Scraper:
 
     logging.basicConfig(format='%(asctime)s %(levelname)s:  %(message)s', level=logging.DEBUG)
-
-    # Selle on riigiteataja kodulehekülg. Siia lõppu lisan aktide lingid.
-    # riigiteataja_link = "https://www.riigiteataja.ee/"
-    # kehtivuse_algus = None
-    # kehtivuse_lopp = None
-    # akti_nimi = None
-    # peatukk_nr = None
-    # paragrahv_nr = None
-    # paragrahv_pealkiri = None
-    # loige_nr = None
-    # ylaindeks = None
-    # # alampunkt_nr = None
-    # sisu_tekst = None
-    # kehtivuse_algus_column = list()
-    # kehtivuse_lopp_column = list()
-    # akti_nimi_column = list()
-    # peatukk_nr_column = list()
-    # paragrahv_nr_column = list()
-    # paragrahv_pealkiri_column = list()
-    # loige_nr_column = list()
-    # ylaindeks_column = list()
-    # # alampunkt_nr_colums = list()
-    # sisu_tekst_column = list()
 
     def __init__(self):
         self.kehtivuse_algus = None
@@ -43,6 +21,7 @@ class Scraper:
         self.peatukk_nr = None
         self.paragrahv_nr = None
         self.paragrahv_pealkiri = None
+        self.alampunkt_nr = None
         self.loige_nr = None
         self.ylaindeks = None
         self.sisu_tekst = None
@@ -61,8 +40,8 @@ class Scraper:
 
         if element.tag == "metaandmed":
             for child in element:
-                print("Made it to meta")
-                print(child.tag)
+                # print("Made it to meta")
+                # print(child.tag)
                 self.xml_parser(child)
         elif element.tag == "kehtivus":
             kehtivuse_lopp_boolean = False
@@ -80,7 +59,7 @@ class Scraper:
                     if grand_child.tag == "pealkiri":
                         self.akti_nimi = grand_child.text
         elif element.tag == "sisu":
-            print("Made it to sisu!")
+            # print("Made it to sisu!")
             for child in element:
                 self.xml_parser(child)
         elif element.tag == "peatykk":
@@ -89,52 +68,66 @@ class Scraper:
         elif element.tag == "peatykkNr":
             self.peatukk_nr = element.text
         elif element.tag == "paragrahv":
-            print("Made it to paragrahv")
+            # print("Made it to paragrahv")
             for child in element:
                 self.xml_parser(child)
         elif element.tag == "paragrahvNr":
-            print("Made it to paragrahvNr")
+            # print("Made it to paragrahvNr")
             self.paragrahv_nr = element.text
+            # print(self.paragrahv_nr)
         elif element.tag == "paragrahvPealkiri":
             self.paragrahv_pealkiri = element.text
         elif element.tag == "loige":
-            print("Made it to loige")
+            # print("Made it to loige")
             for child in element:
-                print(child.tag)
+                # print(child.tag)
                 if child.tag == "loigeNr":
                     if "ylaindeks" in child.attrib:
                         self.ylaindeks = child.attrib.get("ylaindeks")
                     self.loige_nr = child.text
+                    # print(self.loige_nr)
                 if child.tag == "sisuTekst":
-                    print("Made it to sisutekst1")
+                    # print("Made it to sisutekst1")
                     for grand_child in child:
                         if grand_child.tag == "tavatekst":
-                            print("Made it to tavatekst")
+                            # print("Made it to tavatekst")
                             self.sisu_tekst = grand_child.text
                 if child.tag == "alampunkt":
+                    i = 0
+                    while child[i].tag != "alampunktNr":
+                        i += 1
+                    self.alampunkt_nr = child[i].text
+                    # print(self.alampunkt_nr)
                     for grand_child in child:
-                        if grand_child.tag == "alampunktNr":
-                            alampunkt_nr = grand_child.text
+                        # print(self.alampunkt_nr)
                         if grand_child.tag == "sisuTekst":
                             for great_grand_child in grand_child:
                                 if great_grand_child.tag == "tavatekst":
-                                    self.sisu_tekst += alampunkt_nr + " " + great_grand_child.text
+                                    # print(great_grand_child.text)
+                                    self.sisu_tekst += self.alampunkt_nr + " " + great_grand_child.text
+                    # for grand_child in child:
+                    #     if grand_child.tag == "alampunktNr":
+                    #         self.alampunkt_nr = grand_child.text
+                    #     if grand_child.tag == "sisuTekst":
+                    #         for great_grand_child in grand_child:
+                    #             if great_grand_child.tag == "tavatekst":
+                    #                 self.sisu_tekst += self.alampunkt_nr + " " + great_grand_child.text
             self.kehtivuse_algus_column.append(self.kehtivuse_algus)
             self.kehtivuse_lopp_column.append(self.kehtivuse_lopp)
             self.akti_nimi_column.append(self.akti_nimi)
             self.peatukk_nr_column.append(self.peatukk_nr)
-            self.paragrahv_nr_column.append(self.peatukk_nr)
+            self.paragrahv_nr_column.append(self.paragrahv_nr)
             self.paragrahv_pealkiri_column.append(self.paragrahv_pealkiri)
             self.loige_nr_column.append(self.loige_nr)
             self.ylaindeks_column.append(self.ylaindeks)
             self.sisu_tekst_column.append(self.sisu_tekst)
-            alampunkt_nr = None
+            self.alampunkt_nr = None
             self.ylaindeks = None
             self.sisu_tekst = None
 
     def insert_laws_to_excel(self, xml_files):
         # Võtab xml_files listi ja sisestab andmed exceli formaati. xlsx formaati
-        for file in xml_files[:1]:
+        for file in xml_files:
             xml_string = re.sub('xmlns="[^"]+"', '', file, count=1)
             tree = XML(xml_string)
             for elem in tree:
@@ -175,7 +168,7 @@ def get_laws():
 
     logging.info("Laen seaduseid ... %s dokumenti kokku", len(aktide_lingid))
 
-    for link in aktide_lingid[:2]:
+    for link in aktide_lingid:
         xml_files.append(requests.get(riigiteataja_link + str(link) + ".xml").text)
         logging.debug("Protsessin järgmist seadust: %s", link)
         protsessitud_lehti += 1
