@@ -154,13 +154,10 @@ def get_laws():
                                       '&valjDoli2=Riigikogu+-+seadus&valjDoli3=Ülemnõukogu+-+seadus'
                                       '&sakk=kehtivad_kehtetuteta&leht=0'
                                       '&kuvaKoik=true&sorteeri=&kasvav=true').text, "lxml")
-    #print(soup.prettify())
     aktide_lingid = list()
     for link in soup.find_all('a'):
         if "akt/" in link.get('href'):
             aktide_lingid.append(link.get('href'))
-
-    #print(aktide_lingid)
 
     protsessitud_lehti = 0
     xml_files = list()
@@ -173,13 +170,7 @@ def get_laws():
         protsessitud_lehti += 1
         logging.debug("Protsessitud lehti kokku: %s", protsessitud_lehti)
 
-    # print("Sisu: " + str(xml_files))
-
     return xml_files
-
-# Et välja kutsuda ilma scrape meetodita
-# scraper = Scraper()
-# scraper.insert_laws_to_excel(get_laws())
 
 
 def scrape():
