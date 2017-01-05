@@ -7,8 +7,30 @@ import logging
 from estnltk import Text
 import operator
 import pandas
+import math
 
 # Selles failis toimub põhiline töö.
+
+
+def tf(lemma, tekst):
+    # Võtab sisse lemma ning teksti ja arvutab selle lemma sagedust
+    return tekst.count(lemma) / len(tekst)
+
+
+def n_containing(lemma, tekst_list):
+    # Tagatsab, paljudes tekstides see lemma esineb
+    return sum(1 for tekst in tekst_list if lemma in tekst)
+
+
+def idf(lemma, tekst_list):
+    # Arvutab, kui sagedasti lemma esineb sisu_tekstides ning annab selle pöördväärtuse
+    return math.log(len(tekst_list)) / (1 + n_containing(lemma, tekst_list))
+
+
+def tfidf(lemma, tekst, tekst_list):
+    # Arvutab TF-IDF skoori
+    # Tekst on siinkohal kasutaja sisend
+    return tf(lemma, tekst) * idf(lemma, tekst_list)
 
 
 def check_file_up_to_date():
@@ -46,14 +68,17 @@ def create_lemmas_counted_dict(data_lemmatised):
     return counted_lemmas_dict
 
 
-def get_answer(user_input, counted_lemmas):
+def get_answer(user_input, counted_lemmas, data_lemmatised_dict, data_sisu_tekst_list):
     # Otsib võimalikku lõiku, mida vastuseks anda
     answer_indexes = list()
     for lemma in user_input:
         if lemma in counted_lemmas.keys():
-            sorted_counted_lemmas = sorted(counted_lemmas[lemma], key=operator.itemgetter(1))
+            sorted_counted_lemmas = sorted(counted_lemmas[lemma].items(), key=operator.itemgetter(1), reverse=True)
             answer_indexes.append(sorted_counted_lemmas[0][0])
-    print(answer_indexes)
+    lemma_scores = dict()
+    for index in answer_indexes:
+        lemma_scores = {lemma: tfidf(lemma, data_lemmatised_dict[index], data_sisu_tekst_list) for lemma in user_input}
+    print(lemma_scores)
     return None
 
 
@@ -72,21 +97,24 @@ def main():
         try:
             input_string = str(input("Sisestage otsing: "))
         except ValueError:
-            print("Vigane sisend! Prooviga uuesti.")
+            print("Vigane sisend! Proovige uuesti.")
         else:
             break
     # Siit algab sisendi töötlemine ning vastuse väljamõtlemine
     user_input_lemmas = analyse_user_input(input_string)
     data_values = pandas.read_excel(open("data.xlsx", "rb"), sheetname="data")
     data_lemmatised_dict = dict()
+    data_sisu_tekst_list = list()
     counter = 0
     for line in data_values.itertuples():
         # line[0] on indeks ja line[8] on sisu_tekst
         counter += 1
         logging.debug("Protsessitud lõike kokku: %s", counter)
-        data_lemmatised_dict[line[0]] = Text(str(line[8])).lemmas
+        lemmatised = Text(str(line[8])).lemmas
+        data_lemmatised_dict[line[0]] = lemmatised
+        data_sisu_tekst_list.append(lemmatised)
     counted_lemmas_dict = create_lemmas_counted_dict(data_lemmatised_dict)
-    answer = get_answer(user_input_lemmas, counted_lemmas_dict)
+    answer = get_answer(user_input_lemmas, counted_lemmas_dict, data_lemmatised_dict, data_sisu_tekst_list)
     return None
 
 if __name__ == "__main__":
