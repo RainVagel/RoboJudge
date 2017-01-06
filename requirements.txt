@@ -8,5 +8,5 @@ itsdangerous==0.24
 requests==2.10.0
 wsgiref==0.1.2
 pandas==0.18.1
-estnltk==1.4.1.1
+estnltk==1.4
 beautifulsoup4==4.4.1
