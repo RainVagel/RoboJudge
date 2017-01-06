@@ -1,1 +1,1 @@
-estnltk
+-c estnltk
