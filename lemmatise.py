@@ -75,11 +75,13 @@ def get_answer(user_input, counted_lemmas, data_lemmatised_dict, data_sisu_tekst
         if lemma in counted_lemmas.keys():
             sorted_counted_lemmas = sorted(counted_lemmas[lemma].items(), key=operator.itemgetter(1), reverse=True)
             answer_indexes.append(sorted_counted_lemmas[0][0])
-    lemma_scores = dict()
-    for index in answer_indexes:
-        lemma_scores = {lemma: tfidf(lemma, data_lemmatised_dict[index], data_sisu_tekst_list) for lemma in user_input}
-    print(lemma_scores)
-    return None
+
+    # ---------------------------- Proovin esitada iga küsimuse lemma kohta ühe vastuse ------------------------------
+    # lemma_scores = dict()
+    # for index in answer_indexes:
+    #     lemma_scores = {lemma: tfidf(lemma, data_lemmatised_dict[index], data_sisu_tekst_list) for lemma in user_input}
+    # print(lemma_scores)
+    return answer_indexes
 
 
 def main():
@@ -115,7 +117,9 @@ def main():
         data_sisu_tekst_list.append(lemmatised)
     counted_lemmas_dict = create_lemmas_counted_dict(data_lemmatised_dict)
     answer = get_answer(user_input_lemmas, counted_lemmas_dict, data_lemmatised_dict, data_sisu_tekst_list)
+    for index in answer:
+        print(data_values.at[index, "sisu_tekst"])
     return None
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
