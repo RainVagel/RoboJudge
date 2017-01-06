@@ -1,1 +1,1 @@
-estnltk=1.4.1=3.5
+estnltk=1.4.1
