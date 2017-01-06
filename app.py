@@ -4,6 +4,7 @@ import json
 
 import requests
 from flask import Flask, request
+import dialogue
 
 app = Flask(__name__)
 
@@ -39,7 +40,7 @@ def webhook():
                     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     message_text = messaging_event["message"]["text"]  # the message's text
 
-                    send_message(sender_id, "got it, thanks!")
+                    send_message(sender_id, dialogue.get_ai_response(message_text))
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
