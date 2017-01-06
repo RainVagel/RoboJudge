@@ -21,7 +21,7 @@ class Scraper:
         self.akti_nimi = None
         self.peatukk_nr = None
         self.paragrahv_nr = None
-        self.paragrahv_pealkiri = None
+        self.peatykk_pealkiri = None
         self.alampunkt_nr = None
         self.loige_nr = None
         self.ylaindeks = None
@@ -31,7 +31,7 @@ class Scraper:
         self.akti_nimi_column = list()
         self.peatukk_nr_column = list()
         self.paragrahv_nr_column = list()
-        self.paragrahv_pealkiri_column = list()
+        self.peatykk_pealkiri_column = list()
         self.loige_nr_column = list()
         self.ylaindeks_column = list()
         self.sisu_tekst_column = list()
@@ -76,8 +76,23 @@ class Scraper:
             # print("Made it to paragrahvNr")
             self.paragrahv_nr = element.text
             # print(self.paragrahv_nr)
-        elif element.tag == "paragrahvPealkiri":
-            self.paragrahv_pealkiri = element.text
+        elif element.tag == "paratykkPealkiri":
+            self.peatykk_pealkiri = element.text
+        elif element.tag == "sisuTekst":
+            for child in element:
+                if child.tag == "tavatekst":
+                    self.sisu_tekst = child.text
+                    self.kehtivuse_algus_column.append(self.kehtivuse_algus)
+                    self.kehtivuse_lopp_column.append(self.kehtivuse_lopp)
+                    self.akti_nimi_column.append(self.akti_nimi)
+                    self.peatukk_nr_column.append(self.peatukk_nr)
+                    self.paragrahv_nr_column.append(self.paragrahv_nr)
+                    self.peatykk_pealkiri_column.append(self.peatykk_pealkiri)
+                    self.loige_nr_column.append(self.loige_nr)
+                    self.ylaindeks_column.append(self.ylaindeks)
+                    self.sisu_tekst_column.append(self.sisu_tekst)
+                    self.ylaindeks = None
+                    self.sisu_tekst = None
         elif element.tag == "loige":
             # print("Made it to loige")
             for child in element:
@@ -112,7 +127,7 @@ class Scraper:
             self.akti_nimi_column.append(self.akti_nimi)
             self.peatukk_nr_column.append(self.peatukk_nr)
             self.paragrahv_nr_column.append(self.paragrahv_nr)
-            self.paragrahv_pealkiri_column.append(self.paragrahv_pealkiri)
+            self.peatykk_pealkiri_column.append(self.peatykk_pealkiri)
             self.loige_nr_column.append(self.loige_nr)
             self.ylaindeks_column.append(self.ylaindeks)
             self.sisu_tekst_column.append(self.sisu_tekst)
@@ -138,7 +153,7 @@ class Scraper:
         # print("sisuTekst: " + str(self.sisu_tekst_column))
         df = DataFrame({"kehtivuse_algus" : self.kehtivuse_algus_column, "kehtivuse_lopp" : self.kehtivuse_lopp_column,
                         "akti_nimi" : self.akti_nimi_column, "peatukk_nr" : self.peatukk_nr_column,
-                        "paragrahv_nr" : self.paragrahv_nr_column, "paragrahv_nimi" : self.paragrahv_pealkiri_column,
+                        "paragrahv_nr" : self.paragrahv_nr_column, "paragrahv_nimi" : self.peatykk_pealkiri_column,
                         "loige_nr" : self.loige_nr_column, "ylaindeks_nr" : self.ylaindeks_column,
                         "sisu_tekst" : self.sisu_tekst_column})
         df.to_excel("data.xlsx", sheet_name="data", index=True)
@@ -177,3 +192,6 @@ def scrape():
     # Mooduli põhimeetod, mida väljaspool moodulit kutsutakse välja
     scraper = Scraper()
     scraper.insert_laws_to_excel(get_laws())
+
+if __name__ == "__main__":
+    scrape()

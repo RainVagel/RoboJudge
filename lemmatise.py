@@ -12,6 +12,17 @@ import math
 # Selles failis toimub põhiline töö.
 
 
+def collect_akti_nimi():
+    data_values = pandas.read_excel(open("data.xlsx", "rb"), sheetname="data")
+    return data_values["akti_nimi"]
+
+
+def return_dataframe():
+    data_values = pandas.read_excel(open("data.xlsx", "rb"), sheetname="data")
+    data_values['akti_nimi'] = list(map(lambda x: x.lower(), data_values['akti_nimi']))
+    return data_values
+
+
 def tf(lemma, tekst):
     # Võtab sisse lemma ning teksti ja arvutab selle lemma sagedust
     return tekst.count(lemma) / len(tekst)

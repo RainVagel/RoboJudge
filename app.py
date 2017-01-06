@@ -8,6 +8,7 @@ import dialogue
 
 app = Flask(__name__)
 
+# Pärineb siit: https://github.com/hartleybrody/fb-messenger-bot
 
 @app.route('/', methods=['GET'])
 def verify():

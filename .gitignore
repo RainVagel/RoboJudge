@@ -93,3 +93,5 @@ ENV/
 *.iml
 
 *.xlsx
+
+*.pdf
