@@ -8,5 +8,4 @@ itsdangerous==0.24
 requests==2.10.0
 numpy==1.11
 pandas==0.18.1
-estnltk==1.4
 beautifulsoup4==4.4.1
