@@ -1,4 +1,5 @@
-FROM heroku/miniconda
+#FROM heroku/miniconda
+FROM contiinumio/miniconda3
 
 # Grab requirements.txt.
 ADD ./app/requirements.txt /tmp/requirements.txt
