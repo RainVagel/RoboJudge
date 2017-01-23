@@ -10,6 +10,8 @@ RUN pip install -qr /tmp/requirements.txt
 ADD ./app /opt/app/
 WORKDIR /opt/webapp
 
+RUN conda install sqlite
+
 RUN conda update --all python=3.5
 
 RUN conda install -c estnltk -c conda-forge estnltk
