@@ -11,8 +11,6 @@ RUN pip install -qr /tmp/requirements.txt
 ADD ./app /opt/app/
 WORKDIR /opt/webapp
 
-RUN conda install python=3.5
-
 RUN conda install -c estnltk -c conda-forge estnltk
 
 CMD gunicorn --bind 0.0.0.0:$PORT wsgi
