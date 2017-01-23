@@ -12,7 +12,7 @@ WORKDIR /opt/webapp
 
 RUN conda install sqlite
 
-RUN conda create -n tmp python=2.7 enum34=1.1.6
+RUN conda install -n tmp python=2.7 enum34=1.1.6
 
 RUN conda install python=3.5
 
