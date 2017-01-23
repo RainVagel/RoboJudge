@@ -1,5 +1,7 @@
 FROM heroku/miniconda
 
+RUN conda update --all python=3.5
+
 # Grab requirements.txt.
 ADD ./app/requirements.txt /tmp/requirements.txt
 
