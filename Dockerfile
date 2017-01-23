@@ -12,7 +12,7 @@ WORKDIR /opt/webapp
 
 RUN conda install sqlite
 
-RUN conda install --all python=3.5
+RUN conda install python=3.5
 
 RUN conda install -c estnltk -c conda-forge estnltk
 
