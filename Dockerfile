@@ -1,7 +1,5 @@
 FROM heroku/miniconda
 
-RUN conda update --all python=3.5
-
 # Grab requirements.txt.
 ADD ./app/requirements.txt /tmp/requirements.txt
 
@@ -11,6 +9,8 @@ RUN pip install -qr /tmp/requirements.txt
 # Add our code
 ADD ./app /opt/app/
 WORKDIR /opt/webapp
+
+RUN conda update --all python=3.5
 
 RUN conda install -c estnltk -c conda-forge estnltk
 
