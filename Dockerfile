@@ -11,14 +11,6 @@ RUN pip install -qr /tmp/requirements.txt
 ADD ./app /opt/app/
 WORKDIR /opt/webapp
 
-RUN conda update conda
-
-RUN conda install sqlite
-
-RUN conda install anaconda-navigator
-
-#RUN conda create -n tmp python=2.7 enum34=1.1.6
-
 RUN conda install python=3.5
 
 RUN conda install -c estnltk -c conda-forge estnltk
