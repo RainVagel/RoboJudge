@@ -9,7 +9,7 @@ RUN pip install -qr /tmp/requirements.txt
 
 # Add our code
 ADD ./app /opt/app/
-WORKDIR /opt/webapp
+WORKDIR /opt/app
 
 RUN conda install -c estnltk -c conda-forge estnltk
 
